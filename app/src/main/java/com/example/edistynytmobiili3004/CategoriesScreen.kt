@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -29,37 +31,7 @@ import com.example.edistynytmobiili3004.model.CategoryItem
 import com.example.edistynytmobiili3004.viewmodel.CategoriesViewModel
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
-@Composable
-fun CategoriesScreenPrewiev() {
-    Scaffold(topBar = {
-        TopAppBar(title = { Text(text = "categories") }, navigationIcon = {
-            IconButton(onClick = {  }) {
-                Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
-            }
-        })
-    }) { paddingValues ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)) {
-            LazyColumn() {
-                items(listOf(CategoryItem(id=1, name="kategoria1"))) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Row(modifier = Modifier.fillMaxWidth().padding(8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("kuva tähän myöhemmin")
-                            Column(horizontalAlignment = Alignment.End) {
-                                Text(text = it.name, fontWeight = FontWeight.ExtraBold)
-                            }
-                        }
-                    }
-                }
-            }
 
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,7 +62,12 @@ fun CategoriesScreen(onMenuClick: () -> Unit) {
                                 horizontalArrangement = Arrangement.SpaceBetween) {
                                 Text("kuva tähän myöhemmin")
                                 Column(horizontalAlignment = Alignment.End) {
-                                    Text(text = it.name, fontWeight = FontWeight.ExtraBold)
+                                    Text(text = it.category_name, style = MaterialTheme.typography.headlineLarge)
+                                    IconButton(onClick = { /*TODO*/ }) {
+                                        Icon(imageVector = Icons.Default.Delete,
+                                            contentDescription =  "Delete")
+
+                                    }
                                 }
                             }
                         }

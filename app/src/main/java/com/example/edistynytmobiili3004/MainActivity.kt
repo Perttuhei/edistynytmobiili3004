@@ -86,7 +86,12 @@ class MainActivity : ComponentActivity() {
                                     })
                             }
                         }, drawerState = drawerState) {
-                        NavHost(navController = navController, startDestination = "CategoriesScreen") {
+                        NavHost(navController = navController, startDestination = "categoriesScreen") {
+
+                            composable(route="postsScreen") {
+                                PostsScreen()
+                            }
+
                             composable(route = "categoriesScreen") {
                                 CategoriesScreen(onMenuClick = {
                                     scope.launch {

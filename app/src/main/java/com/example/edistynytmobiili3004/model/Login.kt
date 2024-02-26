@@ -1,8 +1,8 @@
 package com.example.edistynytmobiili3004.model
 
 data class LoginReqModel(
-    val username : String ="",
-    val password: String = "",
+    val username : String ="asdasd",
+    val password: String = "asdasd",
     val loading: Boolean = false
 )
 

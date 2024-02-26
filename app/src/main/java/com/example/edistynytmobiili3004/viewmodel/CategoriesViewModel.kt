@@ -29,11 +29,14 @@ class CategoriesViewModel: ViewModel() {
                 _categoriesState.value = _categoriesState.value.copy(loading = true)
                 val response = categoriesService.getCategories()
                 _categoriesState.value = _categoriesState.value.copy(
-                    loading = false,
                     list = response.categories
                 )
             }
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+            _categoriesState.value = _categoriesState.value.copy(err = e.message)
+        } finally {
+            _categoriesState.value = _categoriesState.value.copy(loading = false)
+        }
     }
 
 }

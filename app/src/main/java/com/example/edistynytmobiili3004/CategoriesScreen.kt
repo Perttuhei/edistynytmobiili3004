@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -22,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -47,6 +49,42 @@ fun RandomImage() {
     )
 }
 
+@Composable 
+fun ConfirmCategoryDelete(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        icon = {
+            Icon(imageVector = Icons.Default.Delete, "")
+        },
+        title = {
+            Text(text = "Remove Item")
+        },
+        text = {
+            Text(text = "Are you sure, you want to delete this item")
+        },
+        onDismissRequest = {
+            onDismiss()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirm()
+                }
+            ) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismiss()
+                }
+            ) {
+                Text("Dismiss")
+            }
+        }
+    )
+
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,7 +126,7 @@ fun CategoriesScreen(onMenuClick: () -> Unit, navigatetoEditCategory : (Int) -> 
                                         style = MaterialTheme.typography.headlineSmall,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis)
-                                    IconButton(onClick = { /*TODO*/ }) {
+                                    IconButton(onClick = { categoriesVm.deleteCategoryById(it.id) }) {
                                         Icon(
                                             imageVector = Icons.Default.Delete,
                                             contentDescription =  "Delete")

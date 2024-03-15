@@ -19,7 +19,7 @@ class CategoriesViewModel: ViewModel() {
     val categoriesState: State<CategoriesState> = _categoriesState
 
     private val _deleteCategoryState = mutableStateOf(DeleteCategoryState())
-    private val deleteCategoryState: State<DeleteCategoryState> = _deleteCategoryState
+    val deleteCategoryState: State<DeleteCategoryState> = _deleteCategoryState
 
     init {
         getCategories()

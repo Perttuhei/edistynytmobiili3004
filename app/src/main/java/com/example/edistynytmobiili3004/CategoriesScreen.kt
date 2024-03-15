@@ -50,7 +50,7 @@ fun RandomImage() {
 }
 
 @Composable 
-fun ConfirmCategoryDelete(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+fun ConfirmCategoryDelete(onConfirm: () -> Unit, onCancel: () -> Unit) {
     AlertDialog(
         icon = {
             Icon(imageVector = Icons.Default.Delete, "")
@@ -62,7 +62,7 @@ fun ConfirmCategoryDelete(onConfirm: () -> Unit, onDismiss: () -> Unit) {
             Text(text = "Are you sure, you want to delete this item")
         },
         onDismissRequest = {
-            onDismiss()
+            onCancel()
         },
         confirmButton = {
             TextButton(
@@ -76,7 +76,7 @@ fun ConfirmCategoryDelete(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         dismissButton = {
             TextButton(
                 onClick = {
-                    onDismiss()
+                    onCancel()
                 }
             ) {
                 Text("Dismiss")
@@ -109,6 +109,12 @@ fun CategoriesScreen(onMenuClick: () -> Unit, navigatetoEditCategory : (Int) -> 
                 categoriesVm.categoriesState.value.err != null -> Text(
                     text = "Virhe: ${categoriesVm.categoriesState.value.err}"
                 )
+                categoriesVm.deleteCategoryState.value.id > 0 -> ConfirmCategoryDelete(onConfirm = {
+                    categoriesVm.deleteCategoryById(categoriesVm.deleteCategoryState.value.id) },
+                    onCancel = {
+                        categoriesVm.verifyCategoryRemoval(0)
+                    })
+
 
                 else -> LazyColumn() {
                     items(categoriesVm.categoriesState.value.list) {
@@ -126,7 +132,7 @@ fun CategoriesScreen(onMenuClick: () -> Unit, navigatetoEditCategory : (Int) -> 
                                         style = MaterialTheme.typography.headlineSmall,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis)
-                                    IconButton(onClick = { categoriesVm.deleteCategoryById(it.id) }) {
+                                    IconButton(onClick = { categoriesVm.verifyCategoryRemoval(it.id) }) {
                                         Icon(
                                             imageVector = Icons.Default.Delete,
                                             contentDescription =  "Delete")

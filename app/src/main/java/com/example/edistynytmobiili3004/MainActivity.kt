@@ -101,7 +101,9 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate(
                                         "EditCategoryScreen/${it}"
                                     )
-                                })
+                                }, navigatetoAddCategory = {
+                                    navController.navigate("AddCategoryScreen")
+                                }, navigateBack = {navController.navigate("categoriesScreen")})
                             }
                             composable(route = "loginScreen") {
                                 LoginScreen(goToCategories = {
@@ -109,8 +111,12 @@ class MainActivity : ComponentActivity() {
                                 })
                             }
                             composable(route = "EditCategoryScreen/{categoryId}") {
-                                EditCategoryScreen(goToGategories = {navController.navigate("categoriesScreen")},
+                                EditCategoryScreen(goToCategories = {navController.navigate("categoriesScreen")},
                                     backToCategories = {navController.navigateUp()})
+                            }
+                            composable(route = "AddCategoryScreen") {
+                                AddCategoryScreen(goToCategories = { navController.navigate("categoriesScreen") },
+                                    backToCategories = { navController.navigateUp()})
                             }
                         }
                     }

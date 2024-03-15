@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
@@ -50,7 +51,7 @@ fun RandomImage() {
 }
 
 @Composable 
-fun ConfirmCategoryDelete(onConfirm: () -> Unit, onCancel: () -> Unit) {
+fun ConfirmCategoryDelete(onConfirm: () -> Unit, onCancel: () -> Unit, goToCategories: () -> Unit) {
     AlertDialog(
         icon = {
             Icon(imageVector = Icons.Default.Delete, "")
@@ -68,6 +69,8 @@ fun ConfirmCategoryDelete(onConfirm: () -> Unit, onCancel: () -> Unit) {
             TextButton(
                 onClick = {
                     onConfirm()
+                    goToCategories()
+
                 }
             ) {
                 Text("Confirm")
@@ -86,14 +89,22 @@ fun ConfirmCategoryDelete(onConfirm: () -> Unit, onCancel: () -> Unit) {
 
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoriesScreen(onMenuClick: () -> Unit, navigatetoEditCategory : (Int) -> Unit) {
+fun CategoriesScreen(onMenuClick: () -> Unit, navigatetoEditCategory : (Int) -> Unit, navigatetoAddCategory: () -> Unit, navigateBack: () -> Unit) {
     val categoriesVm: CategoriesViewModel = viewModel()
+
+
     Scaffold(topBar = {
         TopAppBar(title = { Text(text = "Categories") }, navigationIcon = {
             IconButton(onClick = { onMenuClick() }) {
                 Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
+            }
+        }, actions = {
+            Text(text = "Add new")
+            IconButton(onClick = { navigatetoAddCategory() }) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Add category")
             }
         })
     }) {
@@ -113,7 +124,7 @@ fun CategoriesScreen(onMenuClick: () -> Unit, navigatetoEditCategory : (Int) -> 
                     categoriesVm.deleteCategoryById(categoriesVm.deleteCategoryState.value.id) },
                     onCancel = {
                         categoriesVm.verifyCategoryRemoval(0)
-                    })
+                    }, goToCategories = navigateBack)
 
 
                 else -> LazyColumn() {

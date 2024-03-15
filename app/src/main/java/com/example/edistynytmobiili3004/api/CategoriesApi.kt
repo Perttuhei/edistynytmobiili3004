@@ -1,5 +1,6 @@
 package com.example.edistynytmobiili3004.api
 
+import com.example.edistynytmobiili3004.model.AddCategoryReq
 import com.example.edistynytmobiili3004.model.CategoriesResponse
 import com.example.edistynytmobiili3004.model.CategoryItem
 import com.example.edistynytmobiili3004.model.CategoryResponse
@@ -8,6 +9,7 @@ import com.example.edistynytmobiili3004.model.Post
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
@@ -29,5 +31,10 @@ interface CategoriesApi {
     suspend fun editCategory(
         @Path("id") id: Int,
         @Body editCategoryReq: EditCategoryReq
+    ): CategoryResponse
+
+    @POST("category/")
+    suspend fun addCategory(
+        @Body addCategoryReq: AddCategoryReq
     ): CategoryResponse
 }

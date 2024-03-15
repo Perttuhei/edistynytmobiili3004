@@ -6,9 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.edistynytmobiili3004.api.categoriesService
+import com.example.edistynytmobiili3004.model.AddCategoryReq
 import com.example.edistynytmobiili3004.model.CategoriesResponse
 import com.example.edistynytmobiili3004.model.CategoriesState
 import com.example.edistynytmobiili3004.model.CategoryItem
+import com.example.edistynytmobiili3004.model.CategoryState
 import com.example.edistynytmobiili3004.model.DeleteCategoryState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -21,8 +23,35 @@ class CategoriesViewModel: ViewModel() {
     private val _deleteCategoryState = mutableStateOf(DeleteCategoryState())
     val deleteCategoryState: State<DeleteCategoryState> = _deleteCategoryState
 
+    private val _categoryState = mutableStateOf(CategoryState())
+    val categoryState: State<CategoryState> = _categoryState
+
     init {
         getCategories()
+    }
+
+    fun AddCategory(newCategory: AddCategoryReq, goToCategories: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                _categoriesState.value = _categoriesState.value.copy(loading = true)
+
+                // Tehdään POST-pyyntö palvelimelle
+                val response = categoriesService.addCategory(newCategory)
+
+                // Lisätään vastauksen kategoria categoriesState-listaan
+                val updatedList = _categoriesState.value.list.toMutableList()
+                updatedList.add(response.category)
+                _categoriesState.value = _categoriesState.value.copy(list = updatedList)
+
+
+                goToCategories()
+
+            } catch (e: Exception) {
+                _categoriesState.value = _categoriesState.value.copy(err = e.toString())
+            } finally {
+                _categoriesState.value = _categoriesState.value.copy(loading = false)
+            }
+        }
     }
 
     fun verifyCategoryRemoval(categoryId: Int) {

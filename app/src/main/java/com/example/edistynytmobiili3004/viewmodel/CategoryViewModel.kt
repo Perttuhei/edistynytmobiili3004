@@ -8,6 +8,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.edistynytmobiili3004.api.categoriesService
+import com.example.edistynytmobiili3004.model.AddCategoryReq
+import com.example.edistynytmobiili3004.model.CategoriesState
+import com.example.edistynytmobiili3004.model.CategoryItem
 import com.example.edistynytmobiili3004.model.CategoryState
 import com.example.edistynytmobiili3004.model.EditCategoryReq
 import kotlinx.coroutines.launch
@@ -15,8 +18,8 @@ import kotlinx.coroutines.launch
 class CategoryViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     private val _categoryId = savedStateHandle.get<String>("categoryId")?.toIntOrNull() ?: 0
-    private val _categoryState = mutableStateOf(CategoryState())
 
+    private val _categoryState = mutableStateOf(CategoryState())
     val categoryState: State<CategoryState> = _categoryState
 
     fun setDone(newValue: Boolean) {

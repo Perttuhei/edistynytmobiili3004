@@ -22,37 +22,43 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.edistynytmobiili3004.model.AddCategoryReq
+import com.example.edistynytmobiili3004.model.CategoryItem
 import com.example.edistynytmobiili3004.viewmodel.CategoriesViewModel
 import com.example.edistynytmobiili3004.viewmodel.CategoryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditCategoryScreen(goToCategories: () -> Unit, backToCategories: () -> Unit) {
+fun AddCategoryScreen(goToCategories: () -> Unit, backToCategories: () -> Unit) {
 
-    val vm: CategoryViewModel = viewModel()
+    val vm: CategoriesViewModel = viewModel()
+    val categoryVm: CategoryViewModel = viewModel()
 
     Scaffold(
         topBar = {
             TopAppBar(title = {
-                Text(text = vm.categoryState.value.item.name)
+                Text(text = "Add new category")
             }, navigationIcon = { IconButton(onClick = { backToCategories() }) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "back to categories")
-            }})
+            }
+            })
         }
     ) {
 
-
-        LaunchedEffect(key1 = vm.categoryState.value.ok) {
-            if(vm.categoryState.value.ok) {
+        LaunchedEffect(key1 = categoryVm.categoryState.value.ok) {
+            if(categoryVm.categoryState.value.ok) {
                 goToCategories()
-                vm.setDone(false)
+                categoryVm.setDone(false)
             }
         }
 
@@ -62,27 +68,28 @@ fun EditCategoryScreen(goToCategories: () -> Unit, backToCategories: () -> Unit)
                 .padding(it)
         ) {
             when {
-                vm.categoryState.value.loading -> CircularProgressIndicator(
+                vm.categoriesState.value.loading -> CircularProgressIndicator(
                     Modifier.align(Alignment.Center)
                 )
 
-                vm.categoryState.value.err != null -> Text(text = "Virhe: ${vm.categoryState.value.err}")
+                vm.categoriesState.value.err != null -> Text(text = "Virhe: ${vm.categoriesState.value.err}")
                 else -> Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    var categoryName by remember {mutableStateOf("")}
                     OutlinedTextField(
-                        value = vm.categoryState.value.item.name,
-                        onValueChange = { name ->
-                            vm.setName(name)
-                        })
+                        value = categoryName,
+                        onValueChange = { categoryName = it
+                        },
+                        label = { Text(text = "Category Name")})
                     Spacer(modifier = Modifier.height(16.dp))
                     Row {
                         Button(onClick = {
-                            vm.editCategory(goToCategories)
+                            vm.AddCategory(newCategory = AddCategoryReq(categoryName = categoryName)) {goToCategories()}
                         }) {
-                            Text(text = "Edit")
+                            Text(text = "Add")
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         Button(onClick = { backToCategories() }) {

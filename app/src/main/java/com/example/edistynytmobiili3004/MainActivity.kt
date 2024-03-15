@@ -110,7 +110,7 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(route = "EditCategoryScreen/{categoryId}") {
                                 EditCategoryScreen(goToGategories = {navController.navigate("categoriesScreen")},
-                                    goBack = {navController.navigateUp()})
+                                    backToCategories = {navController.navigateUp()})
                             }
                         }
                     }

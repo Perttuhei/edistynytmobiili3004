@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,15 +32,19 @@ import com.example.edistynytmobiili3004.viewmodel.CategoryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditCategoryScreen(goToGategories: () -> Unit, goBack: () -> Unit) {
+fun EditCategoryScreen(goToGategories: () -> Unit, backToCategories: () -> Unit) {
 
     val vm: CategoryViewModel = viewModel()
 
     Scaffold(
         topBar = {
             TopAppBar(title = {
-                Text(text = vm.categoryState.value.categoryName)
-            })
+                Text(text = vm.categoryState.value.item.name)
+            }, navigationIcon = { IconButton(onClick = { backToCategories() }) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "back to categories")
+            }})
         }
     ) {
 
@@ -67,7 +73,7 @@ fun EditCategoryScreen(goToGategories: () -> Unit, goBack: () -> Unit) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     OutlinedTextField(
-                        value = vm.categoryState.value.categoryName,
+                        value = vm.categoryState.value.item.name,
                         onValueChange = { name ->
                             vm.setName(name)
                         })
@@ -79,7 +85,7 @@ fun EditCategoryScreen(goToGategories: () -> Unit, goBack: () -> Unit) {
                             Text(text = "Edit")
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        Button(onClick = { goBack() }) {
+                        Button(onClick = { backToCategories() }) {
                             Text("Back")
                         }
                     }

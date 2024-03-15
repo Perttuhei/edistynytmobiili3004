@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 class CategoryViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
-    val categoryId = savedStateHandle.get<String>("categoryId")?.toIntOrNull() ?: 0
+    private val _categoryId = savedStateHandle.get<String>("categoryId")?.toIntOrNull() ?: 0
     private val _categoryState = mutableStateOf(CategoryState())
 
     val categoryState: State<CategoryState> = _categoryState
@@ -24,7 +24,8 @@ class CategoryViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     }
 
     fun setName(newName: String) {
-        _categoryState.value = _categoryState.value.copy(categoryName = newName)
+        val item = _categoryState.value.item.copy(name = newName)
+        _categoryState.value = _categoryState.value.copy(item = item)
     }
 
 
@@ -34,8 +35,8 @@ class CategoryViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
                 _categoryState.value = _categoryState.value.copy(loading = true)
                 categoriesService.editCategory(
-                    categoryId, EditCategoryReq(
-                        categoryName = _categoryState.value.categoryName
+                    _categoryId, EditCategoryReq(
+                        categoryName = _categoryState.value.item.name
                     )
                 )
 
@@ -55,9 +56,9 @@ class CategoryViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
         viewModelScope.launch {
             try {
                 _categoryState.value = _categoryState.value.copy(loading = true)
-                val response = categoriesService.getCategory(categoryId)
+                val response = categoriesService.getCategory(_categoryId)
                 _categoryState.value =
-                    _categoryState.value.copy(categoryName = response.category.name)
+                    _categoryState.value.copy(item = response.category)
 
 
             } catch (e: Exception) {

@@ -9,7 +9,7 @@ data class CategoriesState(
 )
 
 data class CategoryState(
-    val categoryName: String = "",
+    val item: CategoryItem = CategoryItem(),
     val loading: Boolean = false,
     val ok: Boolean = false,
     val err: String? = null
@@ -28,7 +28,7 @@ data class CategoryItem(
 
 data class CategoriesResponse(val categories: List<CategoryItem> = emptyList())
 
-data class CategoryResponse(val category: CategoryItem)
+data class CategoryResponse(val category: CategoryItem = CategoryItem())
 
 data class EditCategoryReq(
     @SerializedName("category_name")

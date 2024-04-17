@@ -60,13 +60,14 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     ModalNavigationDrawer(
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                        drawerContent = { 
+                        drawerContent = {
                             ModalDrawerSheet {
                                 Spacer(modifier = Modifier.height(16.dp))
                                 NavigationDrawerItem(
                                     label = { Text(text = "Categories") },
                                     selected = true,
-                                    onClick = { scope.launch { drawerState.close() } }, icon = {
+                                    onClick = { scope.launch { drawerState.close() } },
+                                    icon = {
                                         Icon(
                                             imageVector = Icons.Filled.Home,
                                             contentDescription = "Home"
@@ -75,9 +76,12 @@ class MainActivity : ComponentActivity() {
                                 NavigationDrawerItem(
                                     label = { Text(text = "Login") },
                                     selected = false,
-                                    onClick = { scope.launch {
-                                        navController.navigate("loginScreen")
-                                        drawerState.close() } },
+                                    onClick = {
+                                        scope.launch {
+                                            navController.navigate("loginScreen")
+                                            drawerState.close()
+                                        }
+                                    },
                                     icon = {
                                         Icon(
                                             imageVector = Icons.Filled.Lock,
@@ -85,10 +89,14 @@ class MainActivity : ComponentActivity() {
                                         )
                                     })
                             }
-                        }, drawerState = drawerState) {
-                        NavHost(navController = navController, startDestination = "categoriesScreen") {
+                        }, drawerState = drawerState
+                    ) {
+                        NavHost(
+                            navController = navController,
+                            startDestination = "categoriesScreen"
+                        ) {
 
-                            composable(route="postsScreen") {
+                            composable(route = "postsScreen") {
                                 PostsScreen()
                             }
 
@@ -97,28 +105,36 @@ class MainActivity : ComponentActivity() {
                                     scope.launch {
                                         drawerState.open()
                                     }
-                                }, navigatetoEditCategory = {
-                                    navController.navigate(
-                                        "EditCategoryScreen/${it}"
-                                    )
-                                }, navigatetoAddCategory = {
-                                    navController.navigate("AddCategoryScreen")
-                                }, navigateBack = {navController.navigate("categoriesScreen")})
+                                }, navigateToEditCategory = {
+                                    navController.navigate("editCategoryScreen/${it}")
+                                })
                             }
-                            composable(route = "loginScreen") {
+                            composable("loginScreen") {
                                 LoginScreen(goToCategories = {
                                     navController.navigate("categoriesScreen")
                                 })
                             }
-                            composable(route = "EditCategoryScreen/{categoryId}") {
-                                EditCategoryScreen(goToCategories = {navController.navigate("categoriesScreen")},
-                                    backToCategories = {navController.navigateUp()})
-                            }
-                            composable(route = "AddCategoryScreen") {
-                                AddCategoryScreen(goToCategories = { navController.navigate("categoriesScreen") },
-                                    backToCategories = { navController.navigateUp()})
+                            composable("editCategoryScreen/{categoryId}") {
+
+                                EditCategoryScreen(backToCategories = {
+                                    navController.navigateUp()
+                                }, goToCategories = {
+                                    navController.navigate("categoriesScreen")
+                                })
+
+                                EditCategoryScreen(
+                                    backToCategories = {
+                                        navController.navigateUp()
+
+                                    },
+                                    goToCategories = {
+                                        navController.navigate("categoriesScreen")
+                                    })
+
                             }
                         }
+
+
                     }
                 }
             }

@@ -32,30 +32,22 @@ import com.example.edistynytmobiili3004.viewmodel.CategoryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditCategoryScreen(goToCategories: () -> Unit, backToCategories: () -> Unit) {
+fun EditCategoryScreen(backToCategories: () -> Unit, goToCategories: () -> Unit) {
 
     val vm: CategoryViewModel = viewModel()
-
     Scaffold(
         topBar = {
-            TopAppBar(title = {
-                Text(text = vm.categoryState.value.item.name)
-            }, navigationIcon = { IconButton(onClick = { backToCategories() }) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "back to categories")
-            }})
+            TopAppBar(title = { Text(vm.categoryState.value.item.name) }, navigationIcon = {
+                IconButton(onClick = { backToCategories() }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "back to categories"
+                    )
+                }
+            })
+
         }
     ) {
-
-
-        LaunchedEffect(key1 = vm.categoryState.value.ok) {
-            if(vm.categoryState.value.ok) {
-                goToCategories()
-                vm.setDone(false)
-            }
-        }
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -63,34 +55,97 @@ fun EditCategoryScreen(goToCategories: () -> Unit, backToCategories: () -> Unit)
         ) {
             when {
                 vm.categoryState.value.loading -> CircularProgressIndicator(
-                    Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(
+                        Alignment.Center
+                    )
                 )
 
-                vm.categoryState.value.err != null -> Text(text = "Virhe: ${vm.categoryState.value.err}")
-                else -> Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    OutlinedTextField(
-                        value = vm.categoryState.value.item.name,
-                        onValueChange = { name ->
-                            vm.setName(name)
-                        })
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row {
-                        Button(onClick = {
-                            vm.editCategory(goToCategories)
-                        }) {
-                            Text(text = "Edit")
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Button(onClick = { backToCategories() }) {
-                            Text("Back")
+                vm.categoryState.value.err != null -> Text("Virhe ${vm.categoryState.value.err}")
+                else -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        OutlinedTextField(
+                            value = vm.categoryState.value.item.name,
+                            onValueChange = {
+                                vm.setName(it)
+                            })
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Button(onClick = { vm.editCategory(goToCategories) }) {
+                            Text("Edit")
                         }
                     }
                 }
             }
         }
     }
+
+    LaunchedEffect(key1 = vm.categoryState.value.ok) {
+        if(vm.categoryState.value.ok) {
+            vm.setOk(false)
+            goToCategories()
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text(vm.categoryState.value.item.name) }, navigationIcon = {
+                IconButton(onClick = { backToCategories() }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "back to categories"
+                    )
+                }
+            })
+        }
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+        ) {
+            when {
+                vm.categoryState.value.loading -> CircularProgressIndicator(
+                    modifier = Modifier.align(
+                        Alignment.Center
+                    )
+                )
+
+                vm.categoryState.value.err != null -> Text("Virhe: ${vm.categoryState.value.err}")
+                else -> {
+
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+
+                    ) {
+                        OutlinedTextField(
+                            value = vm.categoryState.value.item.name,
+                            onValueChange = {
+                                vm.setName(it)
+                            })
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Button(onClick = {
+                            vm.editCategory()
+                            //goToCategories()
+
+
+                        }) {
+                            Text("Edit")
+                        }
+                    }
+
+
+
+
+                }
+            }
+        }
+    }
+
+
 }

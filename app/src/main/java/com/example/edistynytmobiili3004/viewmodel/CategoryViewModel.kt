@@ -22,60 +22,74 @@ class CategoryViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     private val _categoryState = mutableStateOf(CategoryState())
     val categoryState: State<CategoryState> = _categoryState
 
-    fun setDone(newValue: Boolean) {
-        _categoryState.value = _categoryState.value.copy(ok=newValue)
+    fun setOk(status: Boolean) {
+        _categoryState.value = _categoryState.value.copy(ok=status)
     }
+
+
+
+    fun editCategory() {
+        viewModelScope.launch {
+            try {
+                _categoryState.value = _categoryState.value.copy(loading = true)
+                categoriesService.editCategory(
+                    _categoryId,
+                    EditCategoryReq(name = _categoryState.value.item.name)
+                )
+                setOk(true)
+            } catch (e: Exception) {
+                _categoryState.value = _categoryState.value.copy(err=e.toString())
+            } finally {
+                _categoryState.value = _categoryState.value.copy(loading = false)
+            }
+        }
+    }
+
+    private fun getCategory() {
+        viewModelScope.launch {
+            try {
+                _categoryState.value = _categoryState.value.copy(loading = true)
+                val res = categoriesService.getCategory(_categoryId)
+                _categoryState.value = _categoryState.value.copy(item = res.category)
+            } catch (e: Exception) {
+                _categoryState.value = _categoryState.value.copy(err = e.toString())
+            } finally {
+                _categoryState.value = _categoryState.value.copy(loading = false)
+            }
+        }
+    }
+
+    init {
+        getCategory()
+
+    }
+
 
     fun setName(newName: String) {
         val item = _categoryState.value.item.copy(name = newName)
         _categoryState.value = _categoryState.value.copy(item = item)
     }
 
-
     fun editCategory(goToCategories: () -> Unit) {
         viewModelScope.launch {
             try {
-
                 _categoryState.value = _categoryState.value.copy(loading = true)
                 categoriesService.editCategory(
-                    _categoryId, EditCategoryReq(
-                        categoryName = _categoryState.value.item.name
-                    )
+                    _categoryId,
+                    EditCategoryReq(name = _categoryState.value.item.name)
                 )
-
-                setDone(true)
-
-
+                goToCategories()
             } catch (e: Exception) {
                 _categoryState.value = _categoryState.value.copy(err = e.toString())
             } finally {
+
                 _categoryState.value = _categoryState.value.copy(loading = false)
-            }
-        }
-    }
 
-    private fun getCategoryById() {
-
-        viewModelScope.launch {
-            try {
-                _categoryState.value = _categoryState.value.copy(loading = true)
-                val response = categoriesService.getCategory(_categoryId)
-                _categoryState.value =
-                    _categoryState.value.copy(item = response.category)
-
-
-            } catch (e: Exception) {
-                _categoryState.value = _categoryState.value.copy(err = e.toString())
-            } finally {
-                _categoryState.value = _categoryState.value.copy(loading = false)
             }
         }
     }
 
 
-    init {
-        getCategoryById()
-    }
 
 
 }

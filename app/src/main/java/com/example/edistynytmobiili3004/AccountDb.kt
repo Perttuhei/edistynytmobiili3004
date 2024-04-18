@@ -28,6 +28,6 @@ abstract class AccountDao {
 }
 
 @Database(entities = [AccountEntity::class], version=1)
-abstract class AccountDatabae : RoomDatabase() {
+abstract class AccountDatabase : RoomDatabase() {
     abstract fun accountDao() : AccountDao
 }

@@ -93,7 +93,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         NavHost(
                             navController = navController,
-                            startDestination = "categoriesScreen"
+                            startDestination = "loginScreen"
                         ) {
 
                             composable(route = "postsScreen") {

@@ -1,24 +1,32 @@
 package com.example.edistynytmobiili3004.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.edistynytmobiili3004.AccountDatabase
+import com.example.edistynytmobiili3004.AccountEntity
+import com.example.edistynytmobiili3004.DbProvider
+import com.example.edistynytmobiili3004.Screen
+import com.example.edistynytmobiili3004.api.authService
+import com.example.edistynytmobiili3004.model.AuthReq
 import com.example.edistynytmobiili3004.model.LoginReqModel
+import com.example.edistynytmobiili3004.model.LoginState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class LoginViewModel: ViewModel() {
+class LoginViewModel(private val db: AccountDatabase = DbProvider.db): ViewModel() {
 
-    private val _loginState = mutableStateOf(LoginReqModel())
-    val loginState: State<LoginReqModel> = _loginState
+    private val _loginState = mutableStateOf(LoginState())
+    val loginState: State<LoginState> = _loginState
 
-    fun setUsername(newUsername: String) {
-        _loginState.value = _loginState.value.copy(username = newUsername)
+    fun setUsername(username: String) {
+        _loginState.value = _loginState.value.copy(username = username)
     }
 
-    fun setPassword(newPassword: String) {
-        _loginState.value = _loginState.value.copy(password = newPassword)
+    fun setPassword(password: String) {
+        _loginState.value = _loginState.value.copy(password = password)
     }
 
     private suspend fun _waitForLogin() {
@@ -27,11 +35,21 @@ class LoginViewModel: ViewModel() {
 
     fun login() {
 
-        _loginState.value = _loginState.value.copy(loading = true)
         viewModelScope.launch {
-            _waitForLogin()
-            val user = LoginViewModel()
-            _loginState.value = _loginState.value.copy(loading = false )
+            try {
+                _loginState.value = _loginState.value.copy(loading = true)
+                val res = authService.login(AuthReq(
+                    username = _loginState.value.username,
+                    password = _loginState.value.password))
+                // Log.d("perttu", res.accessToken)
+                db.accountDao().addToken(
+                    AccountEntity(accessToken = res.accessToken)
+                )
+            } catch (e: Exception) {
+                _loginState.value = _loginState.value.copy(err = e.toString())
+            } finally {
+                _loginState.value = _loginState.value.copy(loading = false)
+            }
         }
     }
 }

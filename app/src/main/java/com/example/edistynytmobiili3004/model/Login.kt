@@ -18,7 +18,8 @@ data class LoginState(
     val loading: Boolean = false,
     val err: String? = null,
     val username: String = "",
-    val password: String = "")
+    val password: String = "",
+    val loginOk: Boolean = false)
 
 data class AuthReq(
     val username: String = "",
@@ -28,3 +29,7 @@ data class AuthRes(
     @SerializedName("access_token")
     val accessToken: String = ""
 )
+
+data class LogoutState(
+    val loading: Boolean = false,
+    val err: String? = null)

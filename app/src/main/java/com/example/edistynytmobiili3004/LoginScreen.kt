@@ -1,5 +1,7 @@
 package com.example.edistynytmobiili3004
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,8 +17,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,6 +31,20 @@ import com.example.edistynytmobiili3004.viewmodel.LoginViewModel
 fun LoginScreen(goToCategories: () -> Unit){
 
     val loginVm: LoginViewModel = viewModel()
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = loginVm.loginState.value.err) {
+        loginVm.loginState.value.err?.let {
+            Toast.makeText(context, loginVm.loginState.value.err, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    LaunchedEffect(key1 = loginVm.loginState.value.loginOk ) {
+        if (loginVm.loginState.value.loginOk) {
+            loginVm.setLogin(false)
+            goToCategories()
+        }
+    }
 
     Scaffold(topBar = { TopAppBar(title = { Text("Login") })
     }) { padding ->
@@ -36,7 +54,6 @@ fun LoginScreen(goToCategories: () -> Unit){
             when {
                 loginVm.loginState.value.loading -> CircularProgressIndicator(modifier = Modifier.align(
                     Alignment.Center))
-                loginVm.loginState.value.err != null -> Text("Virhe : ${loginVm.loginState.value.err}")
                 else -> Column( modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -58,7 +75,6 @@ fun LoginScreen(goToCategories: () -> Unit){
                         enabled = loginVm.loginState.value.username != "" && loginVm.loginState.value.password != "",
                         onClick = {
                             loginVm.login()
-                            goToCategories()
                         }) {
                         Text(text = "Login")
 

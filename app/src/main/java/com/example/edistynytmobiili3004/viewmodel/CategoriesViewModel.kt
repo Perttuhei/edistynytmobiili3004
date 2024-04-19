@@ -5,6 +5,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.edistynytmobiili3004.AccountDatabase
+import com.example.edistynytmobiili3004.DbProvider
+import com.example.edistynytmobiili3004.api.authService
 import com.example.edistynytmobiili3004.api.categoriesService
 import com.example.edistynytmobiili3004.model.AddCategoryReq
 import com.example.edistynytmobiili3004.model.AddCategoryState
@@ -13,10 +16,11 @@ import com.example.edistynytmobiili3004.model.CategoriesState
 import com.example.edistynytmobiili3004.model.CategoryItem
 import com.example.edistynytmobiili3004.model.CategoryState
 import com.example.edistynytmobiili3004.model.DeleteCategoryState
+import com.example.edistynytmobiili3004.model.LogoutState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class CategoriesViewModel : ViewModel() {
+class CategoriesViewModel(private val db: AccountDatabase = DbProvider.db) : ViewModel() {
 
 
     private val _categoriesState = mutableStateOf(CategoriesState())
@@ -28,8 +32,28 @@ class CategoriesViewModel : ViewModel() {
     private val _addCategoryState = mutableStateOf(AddCategoryState())
     val addCategoryState: State<AddCategoryState> = _addCategoryState
 
+    private val _logoutState = mutableStateOf(LogoutState())
+    val logoutState: State<LogoutState> = _logoutState
+
     init {
         getCategories()
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            try {
+                 _logoutState.value = _logoutState.value.copy(loading = true)
+                val accessToken = db.accountDao().getToken()
+                accessToken?.let {
+                    authService.logout("Bearer $it")
+                    db.accountDao().removeTokens()
+                }
+            } catch (e: Exception) {
+                _logoutState.value = _logoutState.value.copy(err = e.toString())
+            }finally {
+                _logoutState.value = _logoutState.value.copy(loading = false)
+            }
+        }
     }
 
     fun createCategory() {

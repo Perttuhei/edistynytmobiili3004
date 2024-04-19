@@ -29,6 +29,10 @@ class LoginViewModel(private val db: AccountDatabase = DbProvider.db): ViewModel
         _loginState.value = _loginState.value.copy(password = password)
     }
 
+    fun setLogin(ok: Boolean) {
+        _loginState.value = _loginState.value.copy(loginOk = ok)
+    }
+
     private suspend fun _waitForLogin() {
         delay(2000)
     }
@@ -45,6 +49,7 @@ class LoginViewModel(private val db: AccountDatabase = DbProvider.db): ViewModel
                 db.accountDao().addToken(
                     AccountEntity(accessToken = res.accessToken)
                 )
+                setLogin(true)
             } catch (e: Exception) {
                 _loginState.value = _loginState.value.copy(err = e.toString())
             } finally {

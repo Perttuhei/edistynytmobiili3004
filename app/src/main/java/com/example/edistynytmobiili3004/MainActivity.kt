@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -41,6 +42,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.edistynytmobiili3004.ui.theme.EdistynytMobiili3004Theme
+import com.example.edistynytmobiili3004.viewmodel.CategoriesViewModel
+import com.example.edistynytmobiili3004.viewmodel.CategoryViewModel
 import com.example.edistynytmobiili3004.viewmodel.LoginViewModel
 import kotlinx.coroutines.launch
 
@@ -58,6 +61,7 @@ class MainActivity : ComponentActivity() {
                     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                     val scope = rememberCoroutineScope()
                     val navController = rememberNavController()
+                    val vm: CategoriesViewModel = viewModel()
                     ModalNavigationDrawer(
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                         drawerContent = {
@@ -76,7 +80,7 @@ class MainActivity : ComponentActivity() {
                                 NavigationDrawerItem(
                                     label = { Text(text = "Login") },
                                     selected = false,
-                                    onClick = {
+                                    onClick = {vm.logout()
                                         scope.launch {
                                             navController.navigate("loginScreen")
                                             drawerState.close()
@@ -86,6 +90,21 @@ class MainActivity : ComponentActivity() {
                                         Icon(
                                             imageVector = Icons.Filled.Lock,
                                             contentDescription = "Login"
+                                        )
+                                    })
+                                NavigationDrawerItem(
+                                    label = { Text(text = "Logout") },
+                                    selected = false,
+                                    onClick = { vm.logout()
+                                        scope.launch {
+                                            navController.navigate("loginScreen")
+                                            drawerState.close()
+                                        }
+                                    },
+                                    icon = {
+                                        Icon(
+                                            imageVector = Icons.Filled.KeyboardArrowLeft,
+                                            contentDescription = "Logout"
                                         )
                                     })
                             }

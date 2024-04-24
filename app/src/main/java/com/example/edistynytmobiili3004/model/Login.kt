@@ -30,6 +30,22 @@ data class AuthRes(
     val accessToken: String = ""
 )
 
+data class AccountRes(
+    @SerializedName("auth_user_id")
+    val userId: Int = 0,
+    @SerializedName("username")
+    val username: String = "",
+    @SerializedName("auth_role_auth_role_id")
+    val roleId: Int = 0
+)
+
+data class AccountState(
+    val userId: Int = 0,
+    val username: String = "",
+    val roleId: Int = 0
+)
+
 data class LogoutState(
     val loading: Boolean = false,
-    val err: String? = null)
+    val err: String? = null,
+    val logoutOk: Boolean = false)

@@ -1,10 +1,12 @@
 package com.example.edistynytmobiili3004.api
 
+import com.example.edistynytmobiili3004.model.AccountRes
 import com.example.edistynytmobiili3004.model.AuthReq
 import com.example.edistynytmobiili3004.model.AuthRes
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 
@@ -17,4 +19,10 @@ interface AuthApi {
 
     @POST("auth/logout")
     suspend fun logout(@Header("Authorization") bearerToken: String)
+
+    @GET("auth/account")
+    suspend fun account(@Header("Authorization") bearerToken: String): AccountRes
+
+    @POST("auth/register")
+    suspend fun register(@Body req: AuthReq)
 }

@@ -1,6 +1,5 @@
 package com.example.edistynytmobiili3004
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,13 +8,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,63 +23,59 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.edistynytmobiili3004.viewmodel.LoginViewModel
+import com.example.edistynytmobiili3004.viewmodel.RegisterViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(onMenuClick: () -> Unit, goToCategories: () -> Unit){
+fun RegisterScreen(goToLogin: () -> Unit){
 
-    val loginVm: LoginViewModel = viewModel { LoginViewModel(DbProvider.db, goToCategories) }
+    val vm: RegisterViewModel = viewModel()
     val context = LocalContext.current
 
-    LaunchedEffect(key1 = loginVm.loginState.value.err) {
-        loginVm.loginState.value.err?.let {
-            Toast.makeText(context, loginVm.loginState.value.err, Toast.LENGTH_LONG).show()
+    LaunchedEffect(key1 = vm.registerState.value.err) {
+        vm.registerState.value.err?.let {
+            Toast.makeText(context, vm.registerState.value.err, Toast.LENGTH_LONG).show()
         }
     }
 
-    LaunchedEffect(key1 = loginVm.loginState.value.loginOk ) {
-        if (loginVm.loginState.value.loginOk) {
-            loginVm.setLogin(false)
-            goToCategories()
+    LaunchedEffect(key1 = vm.registerState.value.registerOk ) {
+        if (vm.registerState.value.registerOk) {
+            goToLogin()
+            vm.setRegister(false)
         }
     }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Login") }, navigationIcon = {
-        IconButton(onClick = { onMenuClick() }) {
-            Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
-        }
-    })
+    Scaffold(topBar = { TopAppBar(title = { Text("Register") })
     }) { padding ->
         Box(modifier = Modifier
             .fillMaxSize()
             .padding(padding)) {
             when {
-                loginVm.loginState.value.loading -> CircularProgressIndicator(modifier = Modifier.align(
+                vm.registerState.value.loading -> CircularProgressIndicator(modifier = Modifier.align(
                     Alignment.Center))
                 else -> Column( modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    OutlinedTextField(value = loginVm.loginState.value.username, onValueChange = {username ->
-                        loginVm.setUsername(username)
+                    OutlinedTextField(value = vm.registerState.value.username, onValueChange = {username ->
+                        vm.setUsername(username)
                     }, placeholder = {
                         Text(text = "Username")
                     })
                     Spacer(modifier = Modifier.height(16.dp))
-                    OutlinedTextField(value = loginVm.loginState.value.password, onValueChange = {password ->
-                        loginVm.setPassword(password)
+                    OutlinedTextField(value = vm.registerState.value.password, onValueChange = {password ->
+                        vm.setPassword(password)
 
                     }, placeholder = {
                         Text(text = "Password")
                     }, visualTransformation = PasswordVisualTransformation())
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
-                        enabled = loginVm.loginState.value.username != "" && loginVm.loginState.value.password != "",
+                        enabled = vm.registerState.value.username != "" && vm.registerState.value.password != "",
                         onClick = {
-                            loginVm.login()
+                            vm.register()
                         }) {
-                        Text(text = "Login")
+                        Text(text = "Register")
 
                     }
                 }

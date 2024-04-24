@@ -14,13 +14,19 @@ import androidx.room.RoomDatabase
 data class AccountEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val accessToken: String
+    val accessToken: String,
+    val userId: Int = 0,
+    val username: String = "",
+    val roleId: Int = 0
 )
 
 @Dao
 abstract class AccountDao {
     @Insert
-    abstract suspend fun addToken(entity: AccountEntity)
+    abstract suspend fun addAccount(entity: AccountEntity)
+
+    @Query("SELECT userId FROM account ORDER BY id DESC LIMIT 1;")
+    abstract  suspend fun getUserId() : Int
 
     @Query("SELECT accessToken FROM account ORDER BY id DESC LIMIT 1;")
     abstract  suspend fun getToken() : String?
@@ -28,9 +34,13 @@ abstract class AccountDao {
     @Query("DELETE FROM account")
     abstract suspend fun removeTokens()
 
+    @Query("SELECT COUNT(*) FROM account")
+    abstract suspend fun getAccount(): Int
+
 }
 
 @Database(entities = [AccountEntity::class], version=1)
 abstract class AccountDatabase : RoomDatabase() {
     abstract fun accountDao() : AccountDao
+
 }

@@ -20,9 +20,9 @@ import com.example.edistynytmobiili3004.model.LogoutState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class CategoriesViewModel(private val db: AccountDatabase = DbProvider.db) : ViewModel() {
+class CategoriesViewModel() : ViewModel() {
 
-
+    private val db: AccountDatabase = DbProvider.db
     private val _categoriesState = mutableStateOf(CategoriesState())
     val categoriesState: State<CategoriesState> = _categoriesState
 
@@ -32,41 +32,28 @@ class CategoriesViewModel(private val db: AccountDatabase = DbProvider.db) : Vie
     private val _addCategoryState = mutableStateOf(AddCategoryState())
     val addCategoryState: State<AddCategoryState> = _addCategoryState
 
-    private val _logoutState = mutableStateOf(LogoutState())
-    val logoutState: State<LogoutState> = _logoutState
-
     init {
         getCategories()
-    }
-
-    fun logout() {
-        viewModelScope.launch {
-            try {
-                 _logoutState.value = _logoutState.value.copy(loading = true)
-                val accessToken = db.accountDao().getToken()
-                accessToken?.let {
-                    authService.logout("Bearer $it")
-                    db.accountDao().removeTokens()
-                }
-            } catch (e: Exception) {
-                _logoutState.value = _logoutState.value.copy(err = e.toString())
-            }finally {
-                _logoutState.value = _logoutState.value.copy(loading = false)
-            }
-        }
     }
 
     fun createCategory() {
         viewModelScope.launch {
             try {
-                _addCategoryState.value = _addCategoryState.value.copy(loading = true)
-                val res = categoriesService.createCategory(
-                    AddCategoryReq(
-                        name = _addCategoryState.value.name
-                    )
-                )
-                _categoriesState.value = categoriesState.value.copy(list=_categoriesState.value.list + res)
-                toggleAddCategory()
+                val accessToken = db.accountDao().getToken() ?: throw Exception("Vain kirjautuneet käyttäjät voivat lisätä kategorian")
+                accessToken.let {
+                    val res = authService.account("Bearer $it")
+                    if(res.userId > 0) {
+                        _addCategoryState.value = _addCategoryState.value.copy(loading = true)
+                        val res = categoriesService.createCategory(
+                            AddCategoryReq(
+                                name = _addCategoryState.value.name
+                            ), "Bearer $it"
+                        )
+                        _categoriesState.value = categoriesState.value.copy(list=_categoriesState.value.list + res)
+                        toggleAddCategory()
+                    }
+                }
+
             } catch (e: Exception) {
                 _addCategoryState.value = _addCategoryState.value.copy(err = e.toString())
             } finally {
@@ -86,6 +73,7 @@ class CategoriesViewModel(private val db: AccountDatabase = DbProvider.db) : Vie
 
     fun clearErr() {
         _deleteCategoryState.value = _deleteCategoryState.value.copy(err = null)
+        _addCategoryState.value = _addCategoryState.value.copy(err = null)
     }
 
     fun verifyCategoryRemoval(categoryId: Int) {
@@ -96,16 +84,21 @@ class CategoriesViewModel(private val db: AccountDatabase = DbProvider.db) : Vie
 
         viewModelScope.launch {
             try {
-                categoriesService.removeCategory(categoryId)
-                val listOfCategories = _categoriesState.value.list.filter {
-                    // jos tämä ehto on totta, menee vuorossa oleva item listaan
-                    // jos tämä ehto ei ole totta, jää itemi listasta pois
-                    categoryId != it.id
+                val accessToken = db.accountDao().getToken() ?: throw Exception("Vain kirjautuneet käyttäjät voivat poistaa kategorian")
+                accessToken.let {
+                    val res = authService.account("Bearer $it")
+                    if(res.userId > 0) {
+                        categoriesService.removeCategory(categoryId, "Bearer $it")
+                        val listOfCategories = _categoriesState.value.list.filter {
+                            // jos tämä ehto on totta, menee vuorossa oleva item listaan
+                            // jos tämä ehto ei ole totta, jää itemi listasta pois
+                            categoryId != it.id
+                        }
+                        _categoriesState.value = _categoriesState.value.copy(list = listOfCategories)
+                        _deleteCategoryState.value = _deleteCategoryState.value.copy(id = 0)
+                    }
                 }
 
-
-                _categoriesState.value = _categoriesState.value.copy(list = listOfCategories)
-                _deleteCategoryState.value = _deleteCategoryState.value.copy(id = 0)
             } catch (e: Exception) {
                 _deleteCategoryState.value = deleteCategoryState.value.copy(err = e.toString())
             } finally {
@@ -123,7 +116,7 @@ class CategoriesViewModel(private val db: AccountDatabase = DbProvider.db) : Vie
 
         viewModelScope.launch {
             try {
-                Log.d("juhani", "in getCategories:: starting to fetch data")
+                Log.d("perttu", "in getCategories:: starting to fetch data")
                 _categoriesState.value = _categoriesState.value.copy(loading = true)
                 val response = categoriesService.getCategories()
                 _categoriesState.value = categoriesState.value.copy(
@@ -132,7 +125,7 @@ class CategoriesViewModel(private val db: AccountDatabase = DbProvider.db) : Vie
 
                 )
 
-                Log.d("juhani", "in getCategories:: done  fetching data")
+                Log.d("perttu", "in getCategories:: done  fetching data")
             } catch (e: Exception) {
                 _categoriesState.value = _categoriesState.value.copy(err = e.message)
             } finally {

@@ -7,6 +7,9 @@ import androidx.core.app.NotificationCompat.getCategory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.edistynytmobiili3004.AccountDatabase
+import com.example.edistynytmobiili3004.DbProvider
+import com.example.edistynytmobiili3004.api.authService
 import com.example.edistynytmobiili3004.api.categoriesService
 import com.example.edistynytmobiili3004.model.AddCategoryReq
 import com.example.edistynytmobiili3004.model.CategoriesState
@@ -18,6 +21,7 @@ import kotlinx.coroutines.launch
 class CategoryViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     private val _categoryId = savedStateHandle.get<String>("categoryId")?.toIntOrNull() ?: 0
+    private val db: AccountDatabase = DbProvider.db
 
     private val _categoryState = mutableStateOf(CategoryState())
     val categoryState: State<CategoryState> = _categoryState
@@ -26,17 +30,23 @@ class CategoryViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
         _categoryState.value = _categoryState.value.copy(ok=status)
     }
 
-
-
     fun editCategory() {
         viewModelScope.launch {
             try {
-                _categoryState.value = _categoryState.value.copy(loading = true)
-                categoriesService.editCategory(
-                    _categoryId,
-                    EditCategoryReq(name = _categoryState.value.item.name)
-                )
-                setOk(true)
+                val accessToken = db.accountDao().getToken() ?: throw Exception("Kirjaudu sisään muokataksesi kategoriaa")
+                accessToken.let {
+                    val res = authService.account("Bearer $it")
+                    if(res.userId > 0) {
+                        _categoryState.value = _categoryState.value.copy(loading = true)
+                        categoriesService.editCategory(
+                            _categoryId,
+                            EditCategoryReq(name = _categoryState.value.item.name), "Bearer $it"
+                        )
+                        setOk(true)
+                    }
+                }
+
+
             } catch (e: Exception) {
                 _categoryState.value = _categoryState.value.copy(err=e.toString())
             } finally {
@@ -64,32 +74,9 @@ class CategoryViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     }
 
-
     fun setName(newName: String) {
         val item = _categoryState.value.item.copy(name = newName)
         _categoryState.value = _categoryState.value.copy(item = item)
     }
-
-    fun editCategory(goToCategories: () -> Unit) {
-        viewModelScope.launch {
-            try {
-                _categoryState.value = _categoryState.value.copy(loading = true)
-                categoriesService.editCategory(
-                    _categoryId,
-                    EditCategoryReq(name = _categoryState.value.item.name)
-                )
-                goToCategories()
-            } catch (e: Exception) {
-                _categoryState.value = _categoryState.value.copy(err = e.toString())
-            } finally {
-
-                _categoryState.value = _categoryState.value.copy(loading = false)
-
-            }
-        }
-    }
-
-
-
 
 }

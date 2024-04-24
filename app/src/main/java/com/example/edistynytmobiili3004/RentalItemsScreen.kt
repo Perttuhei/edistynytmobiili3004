@@ -1,5 +1,6 @@
 package com.example.edistynytmobiili3004
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,16 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
@@ -40,58 +37,41 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.example.edistynytmobiili3004.model.CategoryItem
-import com.example.edistynytmobiili3004.viewmodel.CategoriesViewModel
+import com.example.edistynytmobiili3004.viewmodel.LoginViewModel
+import com.example.edistynytmobiili3004.viewmodel.RentalItemViewModel
+import com.example.edistynytmobiili3004.viewmodel.RentalItemsViewModel
 
 @Composable
-fun RandomImage() {
-    AsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data("https://picsum.photos/300")
-            .build(),
-        contentDescription = "random image"
-    )
-}
-
-@Composable
-fun AddCategoryDialog(
-    addCategory: () -> Unit,
+fun AddItemDialog(
+    addItem: () -> Unit,
     name: String,
     setName: (String) -> Unit,
     closeDialog: () -> Unit,
     clearErr: () -> Unit,
     errStr: String?
 ) {
-
     val context = LocalContext.current
 
     LaunchedEffect(key1 = errStr) {
 
         errStr?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            Log.d("perttu", "virhe ${it}")
             clearErr()
         }
     }
-
     AlertDialog(
 
         onDismissRequest = { closeDialog() }, confirmButton = {
-            TextButton(onClick = { addCategory() }) {
-                Text("Save Category")
+            TextButton(onClick = { addItem() }) {
+                Text("Save Item")
             }
         }, title = {
-            Text("Add Category")
+            Text("Add Item")
         },
 
         text = {
@@ -100,12 +80,12 @@ fun AddCategoryDialog(
                 onValueChange = { newName ->
                     setName(newName)
                 },
-                placeholder = { Text("Category Name") })
+                placeholder = { Text("Item Name") })
         })
 }
 
 @Composable
-fun ConfirmCategoryDelete(
+fun ConfirmItemDelete(
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
     clearErr: () -> Unit,
@@ -117,6 +97,7 @@ fun ConfirmCategoryDelete(
 
         errStr?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            Log.d("perttu", "virhe ${it}")
             clearErr()
         }
     }
@@ -134,25 +115,25 @@ fun ConfirmCategoryDelete(
     }, title = {
         Text(text = "Are you sure?")
     }, text = {
-        Text(text = "Are you sure you want to delete this cateogry?")
+        Text(text = "Are you sure you want to delete this item?")
     })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoriesScreen(onMenuClick: () -> Unit, navigateToEditCategory: (Int) -> Unit, goToItems: (Int) -> Unit) {
-    val categoriesVm: CategoriesViewModel = viewModel()
+fun RentalItemsScreen(onMenuClick: () -> Unit, navigateToEditItem: (Int) -> Unit) {
+    val vm: RentalItemsViewModel = viewModel()
 
     Scaffold(
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = {
-            FloatingActionButton(onClick = { categoriesVm.toggleAddCategory() }) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add Category")
+            FloatingActionButton(onClick = { vm.toggleAddItem() }) {
+                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add Item")
             }
         },
         topBar = {
 
-            TopAppBar(title = { Text(text = "Categories") }, navigationIcon = {
+            TopAppBar(title = { Text(text = "items") }, navigationIcon = {
                 IconButton(onClick = { onMenuClick() }) {
                     Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
                 }
@@ -164,45 +145,48 @@ fun CategoriesScreen(onMenuClick: () -> Unit, navigateToEditCategory: (Int) -> U
                 .padding(it)
         ) {
             when {
-                categoriesVm.categoriesState.value.loading -> CircularProgressIndicator(
+                vm.itemsState.value.loading -> CircularProgressIndicator(
                     modifier = Modifier.align(
                         Alignment.Center
                     )
                 )
 
-                categoriesVm.categoriesState.value.err != null -> Text(text = "Virhe: ${categoriesVm.categoriesState.value.err}")
+                vm.itemsState.value.err != null -> Text(text = "Virhe: ${vm.itemsState.value.err}")
 
 
-                categoriesVm.categoriesState.value.isAddingCategory -> AddCategoryDialog(addCategory = {
-                    categoriesVm.createCategory()
+                vm.itemsState.value.isAddingItem -> AddItemDialog(addItem = {
+                    vm.createItem()
                 },
-                    name = categoriesVm.addCategoryState.value.name, setName = { newName ->
-                        categoriesVm.setName(newName)
+                    name = vm.addItemState.value.name, setName = { newName ->
+                        vm.setName(newName)
                     }, closeDialog = {
-                        categoriesVm.toggleAddCategory()
+                        vm.toggleAddItem()
                     }, clearErr = {
-                        categoriesVm.clearErr()
-                    }, categoriesVm.addCategoryState.value.err)
+                        vm.clearErr()
+                    }, vm.addItemState.value.err)
 
-                categoriesVm.deleteCategoryState.value.id > 0 -> ConfirmCategoryDelete(onConfirm = {
-                    categoriesVm.deleteCategoryById(categoriesVm.deleteCategoryState.value.id)
+                vm.deleteItemState.value.id > 0 -> ConfirmItemDelete(onConfirm = {
+                    vm.deleteItemById(vm.deleteItemState.value.id)
 
                 }, onCancel = {
-                    categoriesVm.verifyCategoryRemoval(0)
+                    vm.verifyItemRemoval(0)
                 }, clearErr = {
-                    categoriesVm.clearErr()
+                    vm.clearErr()
                 },
-                    categoriesVm.deleteCategoryState.value.err
+                    vm.deleteItemState.value.err
                 )
 
                 else -> LazyColumn {
-                    items(categoriesVm.categoriesState.value.list) {
+                    items(vm.itemsState.value.list) {
                         Column(modifier = Modifier.fillMaxWidth()) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp)
-                                    .clickable { goToItems(it.id) },
+                                    .clickable {
+                                        navigateToEditItem(it.id)
+                                        Log.d("perttu", "navigateToEditItem ID ${it.id}")
+                                    },
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 RandomImage()
@@ -214,17 +198,27 @@ fun CategoriesScreen(onMenuClick: () -> Unit, navigateToEditCategory: (Int) -> U
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
-                                    IconButton(onClick = { categoriesVm.verifyCategoryRemoval(it.id) }) {
+                                    IconButton(onClick = { vm.verifyItemRemoval(it.id) }) {
                                         Icon(
                                             imageVector = Icons.Default.Delete,
                                             contentDescription = "Delete"
                                         )
                                     }
-                                    IconButton(onClick = { navigateToEditCategory(it.id) }) {
+                                    IconButton(onClick = { navigateToEditItem(it.id) }) {
                                         Icon(
                                             imageVector = Icons.Default.Edit,
                                             contentDescription = "Edit"
                                         )
+                                    }
+                                    TextButton(onClick = { vm.rentItem(it.id) }) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(
+                                                imageVector = Icons.Default.KeyboardArrowDown,
+                                                contentDescription = "Rent",
+                                                modifier = Modifier.padding(end = 4.dp)
+                                            )
+                                            Text(text = "Rent ${it.name}")
+                                        }
                                     }
                                 }
                             }

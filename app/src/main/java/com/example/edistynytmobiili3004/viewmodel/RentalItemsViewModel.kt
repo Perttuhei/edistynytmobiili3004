@@ -6,17 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.edistynytmobiili3004.AccountDatabase
 import com.example.edistynytmobiili3004.DbProvider
 import com.example.edistynytmobiili3004.api.authService
 import com.example.edistynytmobiili3004.api.itemsService
-import com.example.edistynytmobiili3004.model.AccountRes
-import com.example.edistynytmobiili3004.model.AccountState
 import com.example.edistynytmobiili3004.model.AddItemReq
 import com.example.edistynytmobiili3004.model.AddItemState
-import com.example.edistynytmobiili3004.model.CategoriesState
-import com.example.edistynytmobiili3004.model.CategoryState
 import com.example.edistynytmobiili3004.model.DeleteItemState
 import com.example.edistynytmobiili3004.model.ItemsState
 import com.example.edistynytmobiili3004.model.RentItemReq
@@ -71,8 +66,6 @@ class RentalItemsViewModel(savedStateHandle: SavedStateHandle): ViewModel() {
             }
         }
     }
-
-
     fun setName(newName: String) {
         _addItemState.value = _addItemState.value.copy(name = newName)
     }
@@ -89,6 +82,9 @@ class RentalItemsViewModel(savedStateHandle: SavedStateHandle): ViewModel() {
 
     fun verifyItemRemoval(itemId: Int) {
         _deleteItemState.value = _deleteItemState.value.copy(id = itemId)
+    }
+    fun setrentOk(status: Boolean) {
+        _rentItemState.value = _rentItemState.value.copy(ok=status)
     }
 
     fun deleteItemById(itemId: Int) {
@@ -109,11 +105,10 @@ class RentalItemsViewModel(savedStateHandle: SavedStateHandle): ViewModel() {
                         _deleteItemState.value = _deleteItemState.value.copy(id = 0)
                     }
                 }
-
             } catch (e: Exception) {
                 _deleteItemState.value = deleteItemState.value.copy(err = e.toString())
             } finally {
-                //
+
             }
         }
     }
@@ -128,6 +123,7 @@ class RentalItemsViewModel(savedStateHandle: SavedStateHandle): ViewModel() {
                     Log.d("perttu", "rentitem userid = ${res.userId}, item id = ${itemId}")
                     if(res.userId > 0) {
                         itemsService.rentItem(itemId = itemId, req = RentItemReq(userId = userId), bearerToken = "Bearer $it")
+                        _rentItemState.value = _rentItemState.value.copy(ok = true)
                     }
                 }
             } catch (e: Exception) {
@@ -154,11 +150,8 @@ class RentalItemsViewModel(savedStateHandle: SavedStateHandle): ViewModel() {
                         "Item id: ${item.id}, Name: ${item.name}, Category ID: ${_categoryId}"
                     )}
                 _itemsState.value = itemsState.value.copy(
-
                     list = response.items
-
                 )
-
                 Log.d("perttu", "in getitems:: done  fetching data")
             } catch (e: Exception) {
                 _itemsState.value = _itemsState.value.copy(err = e.message)

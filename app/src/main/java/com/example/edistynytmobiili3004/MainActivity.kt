@@ -1,13 +1,9 @@
 package com.example.edistynytmobiili3004
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -17,8 +13,6 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,32 +20,23 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.edistynytmobiili3004.model.CategoryItem
 import com.example.edistynytmobiili3004.ui.theme.EdistynytMobiili3004Theme
-import com.example.edistynytmobiili3004.viewmodel.CategoriesViewModel
-import com.example.edistynytmobiili3004.viewmodel.CategoryViewModel
 import com.example.edistynytmobiili3004.viewmodel.DrawerViewModel
-import com.example.edistynytmobiili3004.viewmodel.LoginViewModel
-import com.example.edistynytmobiili3004.viewmodel.RegisterViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -69,7 +54,6 @@ class MainActivity : ComponentActivity() {
                     val scope = rememberCoroutineScope()
                     val navController = rememberNavController()
                     val drawerVm: DrawerViewModel = viewModel()
-                    val registerVm: RegisterViewModel = viewModel()
                     val context = LocalContext.current
                     var categoryId: Int = 0
 
@@ -82,8 +66,8 @@ class MainActivity : ComponentActivity() {
                     LaunchedEffect(key1 = drawerVm.logoutState.value.logoutOk) {
                         if (drawerVm.logoutState.value.logoutOk) {
                             drawerVm.setLogout(false)
-                            navController.navigate("loginScreen") {
-                                popUpTo("loginScreen") {
+                            navController.navigate(Screen.Login.route) {
+                                popUpTo(Screen.Login.route) {
                                     inclusive = true
                                 }
                             }
@@ -93,13 +77,16 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                         drawerContent = {
                             ModalDrawerSheet {
+                                Text(text = stringResource(id = R.string.menu), modifier = Modifier.padding(16.dp))
                                 Spacer(modifier = Modifier.height(16.dp))
+                                val isSelected = remember { mutableStateOf("") }
                                 NavigationDrawerItem(
-                                    label = { Text(text = "Categories") },
-                                    selected = true,
+                                    label = { Text(text = stringResource(id = R.string.categories)) },
+                                    selected = isSelected.value == "Categories",
                                     onClick = { scope.launch {
-                                        navController.navigate("categoriesScreen")
+                                        navController.navigate(Screen.Categories.route)
                                         drawerState.close()
+                                        isSelected.value = "Categories"
                                     } },
                                     icon = {
                                         Icon(
@@ -108,12 +95,13 @@ class MainActivity : ComponentActivity() {
                                         )
                                     })
                                 NavigationDrawerItem(
-                                    label = { Text(text = "Login") },
-                                    selected = false,
-                                    onClick = {drawerVm.logout()
+                                    label = { Text(text = stringResource(id = R.string.login)) },
+                                    selected = isSelected.value == "Login",
+                                    onClick = {
                                         scope.launch {
-                                            navController.navigate("loginScreen")
+                                            navController.navigate(Screen.Login.route)
                                             drawerState.close()
+                                            isSelected.value = "Login"
                                         }
                                     },
                                     icon = {
@@ -123,11 +111,12 @@ class MainActivity : ComponentActivity() {
                                         )
                                     })
                                 NavigationDrawerItem(
-                                    label = { Text(text = "Logout") },
-                                    selected = false,
+                                    label = { Text(text = stringResource(id = R.string.logout)) },
+                                    selected = isSelected.value == "Logout",
                                     onClick = { drawerVm.logout()
                                         scope.launch {
                                             drawerState.close()
+                                            isSelected.value = "Logout"
                                         }
                                     },
                                     icon = {
@@ -137,13 +126,13 @@ class MainActivity : ComponentActivity() {
                                         )
                                     })
                                 NavigationDrawerItem(
-                                    label = { Text(text = "Register") },
-                                    selected = false,
+                                    label = { Text(text = stringResource(id = R.string.register)) },
+                                    selected = isSelected.value == "Register",
                                     onClick = {
                                         scope.launch {
-                                            navController.navigate("RegisterScreen")
+                                            navController.navigate(Screen.Register.route)
                                             drawerState.close()
-
+                                            isSelected.value = "Register"
                                         }
                                     },
                                     icon = {
@@ -157,20 +146,20 @@ class MainActivity : ComponentActivity() {
                     ) {
                         NavHost(
                             navController = navController,
-                            startDestination = "loginScreen"
+                            startDestination = Screen.Login.route
                         ) {
 
-                            composable(route = "postsScreen") {
+                            composable(route = Screen.Posts.route) {
                                 PostsScreen()
                             }
-                            composable("loginScreen") {
+                            composable(Screen.Login.route) {
                                 LoginScreen(goToCategories = {
-                                    navController.navigate("categoriesScreen")
+                                    navController.navigate(Screen.Categories.route)
                                 }, onMenuClick = {scope.launch {
                                     drawerState.open()
                                 }})
                             }
-                            composable(route = "categoriesScreen") {
+                            composable(route = Screen.Categories.route) {
                                 CategoriesScreen(onMenuClick = {scope.launch {
                                         drawerState.open()
                                     }
@@ -182,14 +171,14 @@ class MainActivity : ComponentActivity() {
                                     categoryId = it
                                     navController.navigate("RentalItemsScreen/${it}")})
                             }
-                            composable("editCategoryScreen/{categoryId}") {
+                            composable(Screen.EditCategory.route) {
                                 EditCategoryScreen(backToCategories = {
                                     navController.navigateUp()
                                 }, goToCategories = {
-                                    navController.navigate("categoriesScreen")
+                                    navController.navigate(Screen.Categories.route)
                                 })
                             }
-                            composable(route = "RentalItemsScreen/{categoryId}") {
+                            composable(route = Screen.RentalItems.route) {
                                 RentalItemsScreen(onMenuClick = {scope.launch {
                                         drawerState.open()
                                     }},
@@ -197,17 +186,19 @@ class MainActivity : ComponentActivity() {
                                         navController.navigate("editItemScreen/${it}")}
                                 )
                             }
-                            composable("editItemScreen/{rental_item_id}") {
+                            composable(Screen.EditItems.route) {
                                 EditItemScreen(backToItems = {
                                     navController.navigateUp()
                                 }, goToItems = {
                                     navController.navigate("RentalItemsScreen/${it}")
                                 })
                             }
-                            composable("RegisterScreen") {
-                                RegisterScreen(goToLogin = {navController.navigate("loginScreen")})
+                            composable(Screen.Register.route) {
+                                RegisterScreen(goToLogin = {navController.navigate(Screen.Login.route)},
+                                    onMenuClick = {scope.launch {
+                                        drawerState.open()
+                                    }})
                             }
-
                         }
                     }
                 }

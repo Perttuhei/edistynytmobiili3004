@@ -1,6 +1,5 @@
 package com.example.edistynytmobiili3004
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -69,14 +69,14 @@ fun LoginScreen(onMenuClick: () -> Unit, goToCategories: () -> Unit){
                     OutlinedTextField(value = loginVm.loginState.value.username, onValueChange = {username ->
                         loginVm.setUsername(username)
                     }, placeholder = {
-                        Text(text = "Username")
+                        Text(text = stringResource(id = R.string.username))
                     })
                     Spacer(modifier = Modifier.height(16.dp))
                     OutlinedTextField(value = loginVm.loginState.value.password, onValueChange = {password ->
                         loginVm.setPassword(password)
 
                     }, placeholder = {
-                        Text(text = "Password")
+                        Text(text = stringResource(id = R.string.password))
                     }, visualTransformation = PasswordVisualTransformation())
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
@@ -84,8 +84,7 @@ fun LoginScreen(onMenuClick: () -> Unit, goToCategories: () -> Unit){
                         onClick = {
                             loginVm.login()
                         }) {
-                        Text(text = "Login")
-
+                        Text(text = stringResource(id = R.string.login))
                     }
                 }
             }

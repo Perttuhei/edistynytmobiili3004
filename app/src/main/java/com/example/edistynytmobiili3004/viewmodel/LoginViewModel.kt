@@ -1,26 +1,16 @@
 package com.example.edistynytmobiili3004.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.edistynytmobiili3004.AccountDao
 import com.example.edistynytmobiili3004.AccountDatabase
 import com.example.edistynytmobiili3004.AccountEntity
 import com.example.edistynytmobiili3004.DbProvider
-import com.example.edistynytmobiili3004.Screen
 import com.example.edistynytmobiili3004.api.authService
-import com.example.edistynytmobiili3004.model.AccountRes
 import com.example.edistynytmobiili3004.model.AccountState
 import com.example.edistynytmobiili3004.model.AuthReq
-import com.example.edistynytmobiili3004.model.AuthRes
-import com.example.edistynytmobiili3004.model.LoginReqModel
 import com.example.edistynytmobiili3004.model.LoginState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -66,7 +56,6 @@ class LoginViewModel(private val db: AccountDatabase = DbProvider.db, val goToCa
                             userId = res.userId,
                             username = res.username,
                             roleId = res.roleId
-
                         )
                         db.accountDao().addAccount(
                             AccountEntity(
@@ -76,7 +65,6 @@ class LoginViewModel(private val db: AccountDatabase = DbProvider.db, val goToCa
                                 accessToken = accessToken))
                         goToCategories()
                     }
-                    //Log.d("perttu", "getAccount _accountState userId ${accountState.value.userId}")
                 }
             } catch (e: Exception) {
                 _loginState.value = _loginState.value.copy(err = e.toString())
@@ -86,7 +74,6 @@ class LoginViewModel(private val db: AccountDatabase = DbProvider.db, val goToCa
         }
     }
     fun login() {
-
         viewModelScope.launch {
             try {
                 _loginState.value = _loginState.value.copy(loading = true)

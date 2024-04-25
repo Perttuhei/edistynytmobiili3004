@@ -11,12 +11,8 @@ import com.example.edistynytmobiili3004.api.authService
 import com.example.edistynytmobiili3004.api.categoriesService
 import com.example.edistynytmobiili3004.model.AddCategoryReq
 import com.example.edistynytmobiili3004.model.AddCategoryState
-import com.example.edistynytmobiili3004.model.CategoriesResponse
 import com.example.edistynytmobiili3004.model.CategoriesState
-import com.example.edistynytmobiili3004.model.CategoryItem
-import com.example.edistynytmobiili3004.model.CategoryState
 import com.example.edistynytmobiili3004.model.DeleteCategoryState
-import com.example.edistynytmobiili3004.model.LogoutState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -53,7 +49,6 @@ class CategoriesViewModel() : ViewModel() {
                         toggleAddCategory()
                     }
                 }
-
             } catch (e: Exception) {
                 _addCategoryState.value = _addCategoryState.value.copy(err = e.toString())
             } finally {
@@ -98,14 +93,12 @@ class CategoriesViewModel() : ViewModel() {
                         _deleteCategoryState.value = _deleteCategoryState.value.copy(id = 0)
                     }
                 }
-
             } catch (e: Exception) {
                 _deleteCategoryState.value = deleteCategoryState.value.copy(err = e.toString())
             } finally {
                 //
             }
         }
-
     }
 
     private suspend fun waitForCategories() {
@@ -113,27 +106,20 @@ class CategoriesViewModel() : ViewModel() {
     }
 
     private fun getCategories() {
-
         viewModelScope.launch {
             try {
                 Log.d("perttu", "in getCategories:: starting to fetch data")
                 _categoriesState.value = _categoriesState.value.copy(loading = true)
                 val response = categoriesService.getCategories()
                 _categoriesState.value = categoriesState.value.copy(
-
                     list = response.categories
-
                 )
-
                 Log.d("perttu", "in getCategories:: done  fetching data")
             } catch (e: Exception) {
                 _categoriesState.value = _categoriesState.value.copy(err = e.message)
             } finally {
                 _categoriesState.value = _categoriesState.value.copy(loading = false)
             }
-
         }
     }
-
-
 }

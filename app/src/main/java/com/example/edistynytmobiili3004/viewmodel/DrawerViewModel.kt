@@ -8,7 +8,6 @@ import com.example.edistynytmobiili3004.AccountDatabase
 import com.example.edistynytmobiili3004.DbProvider
 import com.example.edistynytmobiili3004.api.authService
 import com.example.edistynytmobiili3004.model.LogoutState
-import com.example.edistynytmobiili3004.model.RegisterState
 import kotlinx.coroutines.launch
 
 class DrawerViewModel(private val db: AccountDatabase = DbProvider.db) : ViewModel() {

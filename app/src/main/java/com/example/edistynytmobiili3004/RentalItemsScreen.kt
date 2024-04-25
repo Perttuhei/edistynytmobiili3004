@@ -38,11 +38,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.edistynytmobiili3004.viewmodel.LoginViewModel
-import com.example.edistynytmobiili3004.viewmodel.RentalItemViewModel
 import com.example.edistynytmobiili3004.viewmodel.RentalItemsViewModel
 
 @Composable
@@ -68,10 +67,10 @@ fun AddItemDialog(
 
         onDismissRequest = { closeDialog() }, confirmButton = {
             TextButton(onClick = { addItem() }) {
-                Text("Save Item")
+                Text(stringResource(id = R.string.save_item))
             }
         }, title = {
-            Text("Add Item")
+            Text(stringResource(id = R.string.add_item))
         },
 
         text = {
@@ -80,7 +79,7 @@ fun AddItemDialog(
                 onValueChange = { newName ->
                     setName(newName)
                 },
-                placeholder = { Text("Item Name") })
+                placeholder = { Text(stringResource(id = R.string.item_name)) })
         })
 }
 
@@ -104,18 +103,18 @@ fun ConfirmItemDelete(
 
     AlertDialog(onDismissRequest = { /*TODO*/ }, confirmButton = {
         TextButton(onClick = { onConfirm() }) {
-            Text("Delete")
+            Text(stringResource(id = R.string.delete))
         }
 
 
     }, dismissButton = {
         TextButton(onClick = { onCancel() }) {
-            Text(text = "Cancel")
+            Text(text = stringResource(id = R.string.cancel))
         }
     }, title = {
-        Text(text = "Are you sure?")
+        Text(text = stringResource(id = R.string.are_you_sure))
     }, text = {
-        Text(text = "Are you sure you want to delete this item?")
+        Text(text = stringResource(id = R.string.Are_you_sure_you_want_to_delete_this_item))
     })
 }
 
@@ -123,6 +122,16 @@ fun ConfirmItemDelete(
 @Composable
 fun RentalItemsScreen(onMenuClick: () -> Unit, navigateToEditItem: (Int) -> Unit) {
     val vm: RentalItemsViewModel = viewModel()
+
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = vm.rentItemState.value.ok) {
+        val text = R.string.item_rent_ok
+        if(vm.rentItemState.value.ok) {
+            vm.setrentOk(false)
+            Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Scaffold(
         floatingActionButtonPosition = FabPosition.Center,
@@ -133,7 +142,7 @@ fun RentalItemsScreen(onMenuClick: () -> Unit, navigateToEditItem: (Int) -> Unit
         },
         topBar = {
 
-            TopAppBar(title = { Text(text = "items") }, navigationIcon = {
+            TopAppBar(title = { Text(text = stringResource(id = R.string.items)) }, navigationIcon = {
                 IconButton(onClick = { onMenuClick() }) {
                     Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
                 }

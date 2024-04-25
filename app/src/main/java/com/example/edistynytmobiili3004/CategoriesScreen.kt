@@ -12,14 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
@@ -40,18 +35,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.edistynytmobiili3004.model.CategoryItem
 import com.example.edistynytmobiili3004.viewmodel.CategoriesViewModel
 
 @Composable
@@ -77,7 +67,6 @@ fun AddCategoryDialog(
     val context = LocalContext.current
 
     LaunchedEffect(key1 = errStr) {
-
         errStr?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             clearErr()
@@ -85,22 +74,20 @@ fun AddCategoryDialog(
     }
 
     AlertDialog(
-
         onDismissRequest = { closeDialog() }, confirmButton = {
             TextButton(onClick = { addCategory() }) {
-                Text("Save Category")
+                Text(stringResource(id = R.string.save_category))
             }
         }, title = {
-            Text("Add Category")
+            Text(stringResource(id = R.string.add_category))
         },
-
         text = {
             OutlinedTextField(
                 value = name,
                 onValueChange = { newName ->
                     setName(newName)
                 },
-                placeholder = { Text("Category Name") })
+                placeholder = { Text(stringResource(id = R.string.category_name)) })
         })
 }
 
@@ -123,18 +110,16 @@ fun ConfirmCategoryDelete(
 
     AlertDialog(onDismissRequest = { /*TODO*/ }, confirmButton = {
         TextButton(onClick = { onConfirm() }) {
-            Text("Delete")
+            Text(stringResource(id = R.string.delete))
         }
-
-
     }, dismissButton = {
         TextButton(onClick = { onCancel() }) {
-            Text(text = "Cancel")
+            Text(text = stringResource(id = R.string.cancel))
         }
     }, title = {
-        Text(text = "Are you sure?")
+        Text(text = stringResource(id = R.string.are_you_sure))
     }, text = {
-        Text(text = "Are you sure you want to delete this cateogry?")
+        Text(text = stringResource(id = R.string.Are_you_sure_you_want_to_delete_this_category))
     })
 }
 
@@ -152,7 +137,7 @@ fun CategoriesScreen(onMenuClick: () -> Unit, navigateToEditCategory: (Int) -> U
         },
         topBar = {
 
-            TopAppBar(title = { Text(text = "Categories") }, navigationIcon = {
+            TopAppBar(title = { Text(text = stringResource(id = R.string.categories)) }, navigationIcon = {
                 IconButton(onClick = { onMenuClick() }) {
                     Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
                 }
@@ -171,7 +156,6 @@ fun CategoriesScreen(onMenuClick: () -> Unit, navigateToEditCategory: (Int) -> U
                 )
 
                 categoriesVm.categoriesState.value.err != null -> Text(text = "Virhe: ${categoriesVm.categoriesState.value.err}")
-
 
                 categoriesVm.categoriesState.value.isAddingCategory -> AddCategoryDialog(addCategory = {
                     categoriesVm.createCategory()

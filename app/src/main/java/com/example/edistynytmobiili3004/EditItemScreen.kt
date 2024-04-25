@@ -22,9 +22,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.edistynytmobiili3004.viewmodel.CategoryViewModel
 import com.example.edistynytmobiili3004.viewmodel.RentalItemViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,11 +80,8 @@ fun EditItemScreen(backToItems: () -> Unit, goToItems: (Int) -> Unit) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Button(onClick = {
                             vm.editItem()
-                            //goToCategories()
-
-
                         }) {
-                            Text("Edit")
+                            Text(stringResource(id = R.string.edit))
                         }
                     }
                 }

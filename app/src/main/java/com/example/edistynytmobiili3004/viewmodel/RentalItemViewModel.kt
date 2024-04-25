@@ -48,7 +48,6 @@ class RentalItemViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
             }
         }
     }
-
     private fun getItem() {
         viewModelScope.launch {
             try {
@@ -59,7 +58,6 @@ class RentalItemViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
                 if (user) {
                     val res = itemsService.getItem(itemId = _itemId)
                     _itemState.value = _itemState.value.copy(item = res)
-                    //Log.d("perttu", "itemstate ${res}")
                 }
             } catch (e: Exception) {
                 Log.d("perttu", "getItem _itemId = ${_itemId}")
@@ -70,7 +68,6 @@ class RentalItemViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
         }
     }
 
-
     init {
         getItem()
     }
@@ -79,5 +76,4 @@ class RentalItemViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
         val item = _itemState.value.item.copy(name = newName)
         _itemState.value = _itemState.value.copy(item = item)
     }
-
 }

@@ -21,22 +21,40 @@ val itemsService = retrofit.create(ItemsApi::class.java)
 interface ItemsApi {
 
     @GET("category/{category_id}/items")
-    suspend fun getItems(@Path("category_id") categoryId: Int): ItemsResponse
+    suspend fun getItems(
+        @Path("category_id") categoryId: Int
+    ): ItemsResponse
 
     @POST("category/{category_id}/items")
-    suspend fun createItem(@Path("category_id") categoryId: Int, @Body req: AddItemReq, @Header("Authorization") bearerToken: String): Item
+    suspend fun createItem(
+        @Path("category_id") categoryId: Int,
+        @Body req: AddItemReq,
+        @Header("Authorization") bearerToken: String
+    ): Item
 
     @POST("rentalitem/{rental_item_id}/rent")
-    suspend fun rentItem(@Path("rental_item_id") itemId: Int, @Body req: RentItemReq, @Header("Authorization") bearerToken: String)
+    suspend fun rentItem(
+        @Path("rental_item_id") itemId: Int,
+        @Body req: RentItemReq,
+        @Header("Authorization") bearerToken: String
+    )
 
     @GET("rentalitem/{rental_item_id}")
-    suspend fun getItem(@Path("rental_item_id") itemId: Int): Item
+    suspend fun getItem(
+        @Path("rental_item_id") itemId: Int
+    ): Item
 
     @DELETE("rentalitem/{id}")
-    suspend fun removeItem(@Path("id") id: Int, @Header("Authorization") bearerToken: String)
+    suspend fun removeItem(
+        @Path("id") id: Int,
+        @Header("Authorization") bearerToken: String
+    )
 
     @PUT("rentalitem/{rental_item_id}")
     suspend fun editItem(
-        @Path("rental_item_id") id: Int, @Body editItemReq: EditItemReq, @Header("Authorization") bearerToken: String): ItemResponse
+        @Path("rental_item_id") id: Int,
+        @Body editItemReq: EditItemReq,
+        @Header("Authorization") bearerToken: String
+    ): ItemResponse
 
 }

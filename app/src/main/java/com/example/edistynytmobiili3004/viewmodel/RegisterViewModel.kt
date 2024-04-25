@@ -5,8 +5,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.edistynytmobiili3004.AccountDatabase
-import com.example.edistynytmobiili3004.DbProvider
 import com.example.edistynytmobiili3004.api.authService
 import com.example.edistynytmobiili3004.model.AuthReq
 import com.example.edistynytmobiili3004.model.RegisterState

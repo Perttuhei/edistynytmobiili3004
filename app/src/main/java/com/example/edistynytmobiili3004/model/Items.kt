@@ -19,7 +19,7 @@ data class RentItemState(
     val loading: Boolean = false,
     val err: String? = null,
     val item: Item = Item(),
-    val status: String = ""
+    val ok: Boolean = false
 )
 
 data class ItemState(

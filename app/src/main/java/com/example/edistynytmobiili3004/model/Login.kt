@@ -3,8 +3,8 @@ package com.example.edistynytmobiili3004.model
 import com.google.gson.annotations.SerializedName
 
 data class LoginReqModel(
-    val username : String ="Perttu",
-    val password: String = "salasana",
+    val username : String = "",
+    val password: String = "",
     val loading: Boolean = false
 )
 

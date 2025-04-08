@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EdistynytMobiili3004</string>
+    <string name="categories">Kategoriat</string>
+    <string name="menu">Valikko</string>
+    <string name="login">Kirjaudu sisään</string>
+    <string name="logout">Kirjaudu ulos</string>
+    <string name="register">Rekisteröidy</string>
+    <string name="items">Tavarat</string>
+    <string name="edit">Muokkaa</string>
+    <string name="save_item">Tallenna tavara</string>
+    <string name="add_item">Lisää tavara</string>
+    <string name="item_name">Tavaran nimi</string>
+    <string name="cancel">Edellinen</string>
+    <string name="delete">Poista</string>
+    <string name="are_you_sure">Oletko varma?</string>
+    <string name="Are_you_sure_you_want_to_delete_this_item">Oletko varma että haluat poistaa tämän tavaran?</string>
+    <string name="username">Käyttäjätunnus</string>
+    <string name="password">Salasana</string>
+    <string name="save_category">Tallenna kategoria</string>
+    <string name="add_category">Lisää kategoria</string>
+    <string name="category_name">Kategorian nimi</string>
+    <string name="Are_you_sure_you_want_to_delete_this_category">Oletko varma että haluat poistaa tämän kategorian?</string>
+    <string name="item_rent_ok">Tavaran vuokraus onnistunut</string>
+</resources>
